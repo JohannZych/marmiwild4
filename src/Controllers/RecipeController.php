@@ -1,21 +1,29 @@
 <?php
 
-require __DIR__ . '/../Models/RecipeModel.php';
+namespace Johann\PhpAdvanced4Material;
+
+use Johann\PhpAdvanced4Material\RecipeModel;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class RecipeController
 {
     private RecipeModel $model;
+    private Environment $twig;
 
     public function __construct()
     {
-        $this->model = new RecipeModel();
+        $loader = new FilesystemLoader(__DIR__ . '/../Views/');
+        $this->twig = new Environment($loader);
+        //
     }
 
-    public function browse(): void
+    public function browse(): string
     {
         $recipes = $this->model->getAll();
-
-        require __DIR__ . '/../Views/index.php';
+        return $this->twig->render('index.html.twig', [
+            'recipes' => $recipes
+        ]);
     }
 
     public function show(int $id)
@@ -36,7 +44,7 @@ class RecipeController
         }
 
         // Generate the web page
-        require __DIR__ . '/../Views/show.php';
+        require __DIR__ . '/../Views/show.html.twig';
     }
 
     public function add()
@@ -58,7 +66,7 @@ class RecipeController
         }
 
         // Generate the web page
-        require __DIR__ . '/../Views/form.php';
+        require __DIR__ . '/../Views/form.html.twig';
     }
 
     private function validate(array $recipe)
@@ -72,7 +80,7 @@ class RecipeController
         if (!empty($recipe['title']) && strlen($recipe['title']) > 255) {
             $errors[] = 'The title should be less than 255 characters';
         }
-    
+
         return $errors ?? [];
     }
 
@@ -97,11 +105,11 @@ class RecipeController
             // Update the recipe
             if (empty($errors)) {
                 $this->model->update($recipe, $id);
-                header('Location: /show?id='.$id);
+                header('Location: /show?id=' . $id);
             }
         }
 
         // Generate the web page
-        require __DIR__ . '/../Views/form.php';
+        require __DIR__ . '/../Views/form.html.twig';
     }
 }

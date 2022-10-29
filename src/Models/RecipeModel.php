@@ -1,5 +1,7 @@
 <?php
 
+namespace Johann\PhpAdvanced4Material;
+
 class RecipeModel
 {
     private \PDO $connection;
